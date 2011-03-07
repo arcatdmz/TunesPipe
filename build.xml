@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- exewrap must be on path; e.g. C:\Program Files\Java\jdk1.6.0_18\bin\exewrap.exe -->
+
+<project name="RemotiTunes" default="runnable-jar" basedir=".">
+
+	<!-- ****Properties**** -->
+
+	<property name="app.name" value="RemotiTunes" />
+	<property name="app.version" value="1.0.0.0" />
+	<property name="app.icon" value="resources/remotitunes.ico" />
+	<property name="app.icon.png" value="resources/remotitunes.png" />
+	<property name="app.icon.icns" value="resources/remotitunes.icns" />
+	<property name="app.main" value="jp.digitalmuseum.rt.RemotiTunesMain" />
+	<property name="app.classes" value="**/*.class" />
+	<property name="app.classpath" value="jmdns.jar ganymed-ssh2-build251beta1.jar" />
+
+	<!-- ****Targets**** -->
+
+	<!-- Runnable Jar -->
+	<target name="runnable-jar">
+		<jar destfile="./${app.name}.jar">
+			<zipfileset src="./jar-in-jar-loader.zip" />
+			<fileset dir="bin" includes="${app.classes}" />
+			<fileset dir="lib" includes="${app.classpath}" />
+			<zipfileset file="${app.icon.png}" fullpath="${app.icon.png}" />
+			<manifest>
+				<attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader" />
+				<attribute name="Class-Path" value="." />
+				<attribute name="Rsrc-Main-Class" value="${app.main}" />
+				<attribute name="Rsrc-Class-Path" value="./ ${app.classpath}" />
+			</manifest>
+		</jar>
+	</target>
+
+	<!-- Runnable App -->
+	<taskdef name="jarbundler"
+		classpath="lib/jarbundler-2.2.0.jar"
+		classname="net.sourceforge.jarbundler.JarBundler" />
+	<target name="runnable-app" depends="runnable-jar">
+		<jarbundler dir="./"
+			name="${app.name}"
+			icon="${app.icon.icns}"
+			jar="./${app.name}.jar"
+			mainclass="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"
+			version="${app.version}" />
+	</target>
+
+	<!-- Runnable Exe -->
+	<target name="runnable-exe" depends="runnable-jar">
+		<jar destfile="./${app.name}_win.jar">
+			<fileset dir="bin" includes="${app.classes}" />
+			<zipfileset file="${app.icon.png}" fullpath="${app.icon.png}" />
+			<manifest>
+				<attribute name="Main-Class" value="${app.main}" />
+			</manifest>
+		</jar>
+		<exec dir="./" executable="C:\Program Files (x86)\Java\jre6\bin\exewrap.exe">
+		  <arg line="-v ${app.version} -t 1.6 -i ${app.icon} -g ${app.name}_win.jar "/>
+		</exec>
+		<move file="./${app.name}_win.exe" tofile="./${app.name}.exe" />
+		<delete file="./${app.name}_win.jar" />
+	</target>
+
+	<!-- Clean -->
+	<target name="clean">
+		<delete dir="bin" />
+		<delete file="./${app.name}.jar" />
+		<delete file="./${app.name}.exe" />
+		<delete file="./${app.name}.log" />
+	</target>
+</project>

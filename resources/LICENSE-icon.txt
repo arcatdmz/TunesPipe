@@ -1,0 +1,11 @@
+
+Application icon of RemotiTunes
+	uses part of 90 Vector Icons
+		by Garcya
+		distributed at http://qvectors.net/vector-icons/90-vector-icons/
+		under Creative Commons Attribution-Noncommercial-Share Alike 3.0,
+	is based on iPhone / iPad icon PSD template
+		by Sebastiaan de With
+		distributed at http://blog.cocoia.com/2010/iphone-ipad-icon-psd-template/
+	and is converted to .icns/.ico
+		by iConvert v2.8 at http://iconverticons.com/
