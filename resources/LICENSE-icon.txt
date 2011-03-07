@@ -1,4 +1,3 @@
-
 Application icon of RemotiTunes
 	uses part of 90 Vector Icons
 		by Garcya
