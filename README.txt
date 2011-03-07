@@ -1,36 +1,41 @@
-RemotiTunes
+﻿RemotiTunes
 Copyright (C) 2011 Jun KATO
 
 version 1.0.0
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-RemotiTunes(�ȉ��A�{�\�t�g�E�F�A)�́ASSH�|�[�g�t�H���[�f�B���O
-��p���āA�����[�g�Ŏ��s����Ă���DAAP�T�[�r�X�����[�J���z�X�g
-�̔C�ӂ̃|�[�g�ɓ]�����܂��B
+RemotiTunes(以下、本ソフトウェア)は、SSHポートフォワーディング
+を用いて、リモートで実行されているDAAPサービスをローカルホスト
+の任意のポートに転送します。
 
-DAAP�N���C�A���g�Ń����[�g�T�[�o�̉��y�𒮂����߂ɂ́A�ȉ��̏�
-�����������ꂽ��ԂŖ{�\�t�g�E�F�A���N������K�v������܂��B
+DAAPクライアントでリモートサーバの音楽を聴くためには、以下の条
+件が満たされた状態で本ソフトウェアを起動する必要があります。
 
-�E�����[�g�T�[�o��DAAP�T�[�r�X(iTunes�Ȃ�)�����삵�Ă��邱��
+・リモートサーバでDAAPサービス(iTunesなど)が動作していること
 
-�E�����[�g�T�[�o���ÓI�O���[�o��IP�������Ă��邱��
-�@(�ÓIIP�������Ă��Ȃ��ꍇ��DDNS���ݒ肳��Ă��邱��)
+・リモートサーバが静的グローバルIPを持っていること
+　(静的IPを持っていない場合はDDNSが設定されていること)
 
-�E�����[�g�T�[�o��SSH�T�[�r�X�����삵�Ă��邱��
+・リモートサーバでSSHサービスが動作していること
 
-�E�����[�g�T�[�o���O�������SSH�ڑ����󂯕t���邱��
+・リモートサーバが外部からのSSH接続を受け付けること
 
-�ڂ��������͌����T�C�g���������������B
+詳しい説明は公式サイトをご覧ください。
 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-�{�\�t�g�E�F�A��Java�p�̃��C�u�����uGanymed SSH2�v�ƁuJmDNS�v
-��p���ĊJ������܂����B
+本ソフトウェアはJava用のライブラリ 「Ganymed SSH2」と「JmDNS」
+を用いて開発されました。各ライブラリのライセンスについて詳しく
+は lib フォルダ内の各テキストファイルをご覧ください。
 
-�܂��A�{�\�t�g�E�F�A���̂�Apache License, Version 2.0�ɏ]����
-�z�z����Ă���A�����T�C�g�Ń\�[�X�R�[�h�����ł��܂��B
-���C�Z���X�ɂ��ďڂ����� lib �t�H���_���̊e�e�L�X�g�t�@�C��
-���������������B
+ソフトウェアのアイコンは「90 Vector Icons」を「iPhone / iPad
+icon PSD template」と共に改変して作成しました。ライセンス等に
+ついて詳しくは resources フォルダ内のテキストファイルをご覧く
+ださい。
 
+本ソフトウェア自体は Apache License, Version 2.0 に従って配布
+されており、GitHubでソースコードを入手できます。
+https://github.com/arcatdmz/TunesPipe
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 http://rt.digitalmuseum.jp/

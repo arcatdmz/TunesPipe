@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- exewrap must be on path; e.g. C:\Program Files\Java\jdk1.6.0_18\bin\exewrap.exe -->
 
-<project name="RemotiTunes" default="runnable-jar" basedir=".">
+<project name="RemotiTunes" default="compile" basedir=".">
 
 	<!-- ****Properties**** -->
 
@@ -12,14 +12,40 @@
 	<property name="app.icon.icns" value="resources/remotitunes.icns" />
 	<property name="app.main" value="jp.digitalmuseum.rt.RemotiTunesMain" />
 	<property name="app.classes" value="**/*.class" />
-	<property name="app.classpath" value="jmdns.jar ganymed-ssh2-build251beta1.jar" />
+	<property name="app.classpath" value="lib/jmdns.jar;lib/ganymed-ssh2-build251beta1.jar" />
+	<property name="app.libraries" value="jmdns.jar ganymed-ssh2-build251beta1.jar" />
 
 	<!-- ****Targets**** -->
 
+	<!-- Compile -->
+	<target name="compile">
+		<mkdir dir="bin" />
+		<javac srcdir="src" destdir="bin"
+				target="1.6"
+				source="1.6"
+				optimize="on"
+				classpath="${app.classpath}"
+				encoding="UTF-8" />
+	</target>
+
+	<!-- Runnable Jar Distribution Package -->
+	<target name="runnable-jar-package" depends="runnable-jar">
+		<mkdir dir="dist" />
+		<zip destfile="dist/${app.name}.zip">
+			<zipfileset prefix="${app.name}/" file="${app.name}.jar" />
+			<zipfileset prefix="${app.name}/" dir=".">
+				<include name="LICENSE.txt"/>
+				<include name="README.txt"/>
+				<include name="lib/*.txt" />
+				<include name="resources/*.txt" />
+			</zipfileset>
+		</zip>
+	</target>
+
 	<!-- Runnable Jar -->
-	<target name="runnable-jar">
-		<jar destfile="./${app.name}.jar">
-			<zipfileset src="./jar-in-jar-loader.zip" />
+	<target name="runnable-jar" depends="compile">
+		<jar destfile="${app.name}.jar">
+			<zipfileset src="lib/jar-in-jar-loader.zip" />
 			<fileset dir="bin" includes="${app.classes}" />
 			<fileset dir="lib" includes="${app.classpath}" />
 			<zipfileset file="${app.icon.png}" fullpath="${app.icon.png}" />
@@ -27,9 +53,23 @@
 				<attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader" />
 				<attribute name="Class-Path" value="." />
 				<attribute name="Rsrc-Main-Class" value="${app.main}" />
-				<attribute name="Rsrc-Class-Path" value="./ ${app.classpath}" />
+				<attribute name="Rsrc-Class-Path" value="./ ${app.libraries}" />
 			</manifest>
 		</jar>
+	</target>
+
+	<!-- Runnable App Distribution Package -->
+	<target name="runnable-app-package" depends="runnable-app">
+		<mkdir dir="dist" />
+		<zip destfile="dist/${app.name}-osx.zip">
+			<zipfileset prefix="${app.name}/" dir="${app.name}.app" />
+			<zipfileset prefix="${app.name}/" dir=".">
+				<include name="LICENSE.txt"/>
+				<include name="README.txt"/>
+				<include name="lib/*.txt" />
+				<include name="resources/*.txt" />
+			</zipfileset>
+		</zip>
 	</target>
 
 	<!-- Runnable App -->
@@ -37,35 +77,52 @@
 		classpath="lib/jarbundler-2.2.0.jar"
 		classname="net.sourceforge.jarbundler.JarBundler" />
 	<target name="runnable-app" depends="runnable-jar">
-		<jarbundler dir="./"
+		<jarbundler dir="."
 			name="${app.name}"
 			icon="${app.icon.icns}"
-			jar="./${app.name}.jar"
+			jar="${app.name}.jar"
 			mainclass="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"
 			version="${app.version}" />
 	</target>
 
+	<!-- Runnable Exe Distribution Package -->
+	<target name="runnable-exe-package" depends="runnable-exe">
+		<mkdir dir="dist" />
+		<zip destfile="dist/${app.name}-win.zip">
+			<zipfileset prefix="${app.name}/" file="${app.name}.exe" />
+			<zipfileset prefix="${app.name}/" dir=".">
+				<include name="LICENSE.txt"/>
+				<include name="README.txt"/>
+				<include name="lib/*.txt" />
+				<include name="resources/*.txt" />
+			</zipfileset>
+			<zipfileset prefix="${app.name}/lib" dir="lib" includes="${app.libraries}" />
+		</zip>
+	</target>
+
 	<!-- Runnable Exe -->
-	<target name="runnable-exe" depends="runnable-jar">
-		<jar destfile="./${app.name}_win.jar">
+	<target name="runnable-exe" depends="compile">
+		<jar destfile="${app.name}_win.jar">
 			<fileset dir="bin" includes="${app.classes}" />
 			<zipfileset file="${app.icon.png}" fullpath="${app.icon.png}" />
 			<manifest>
 				<attribute name="Main-Class" value="${app.main}" />
 			</manifest>
 		</jar>
-		<exec dir="./" executable="C:\Program Files (x86)\Java\jre6\bin\exewrap.exe">
+		<exec dir="." executable="C:\Program Files (x86)\Java\jre6\bin\exewrap.exe">
 		  <arg line="-v ${app.version} -t 1.6 -i ${app.icon} -g ${app.name}_win.jar "/>
 		</exec>
-		<move file="./${app.name}_win.exe" tofile="./${app.name}.exe" />
-		<delete file="./${app.name}_win.jar" />
+		<move file="${app.name}_win.exe" tofile="${app.name}.exe" />
+		<delete file="${app.name}_win.jar" />
 	</target>
 
 	<!-- Clean -->
 	<target name="clean">
 		<delete dir="bin" />
-		<delete file="./${app.name}.jar" />
-		<delete file="./${app.name}.exe" />
-		<delete file="./${app.name}.log" />
+		<delete file="${app.name}.jar" />
+		<delete dir="${app.name}.app" />
+		<delete file="${app.name}.exe" />
+		<delete file="${app.name}.log" />
+		<delete dir="dist" includes="*.zip" />
 	</target>
 </project>
