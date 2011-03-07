@@ -170,7 +170,7 @@ public class TunesPipeFrame extends JFrame {
 		this.setSize(560, 380);
 		this.setMinimumSize(new Dimension(560, 380));
 		this.setContentPane(getJContentPane());
-		this.setTitle("RemotiTunes");
+		this.setTitle("TunesPipe");
 		ButtonGroup group = new ButtonGroup();
 		group.add(getJAuthPassRadioButton());
 		group.add(getJAuthPublicKeyRadioButton());

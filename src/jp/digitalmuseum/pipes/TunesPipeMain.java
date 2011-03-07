@@ -39,7 +39,7 @@ import ch.ethz.ssh2.Connection;
 
 public class TunesPipeMain implements Pipe {
 	public static final String CONFIG_FILENAME = "config";
-	public static final String ICON_FILENAME = "resources/remotitunes.png";
+	public static final String ICON_FILENAME = "resources/tunespipe.png";
 	private static TunesPipeMain instance;
 	private ExecutorService executor;
 
@@ -68,7 +68,7 @@ public class TunesPipeMain implements Pipe {
 	}
 
 	private TunesPipeMain() {
-		Runtime.getRuntime().addShutdownHook(new RemotiShutdownHook());
+		Runtime.getRuntime().addShutdownHook(new TunesShutdownHook());
 		executor = Executors.newSingleThreadExecutor();
 		isOSX = System.getProperty("os.name").toLowerCase().indexOf("mac") >= 0;
 		SwingUtilities.invokeLater(new Runnable() {
@@ -195,7 +195,7 @@ public class TunesPipeMain implements Pipe {
 	private void setupRendezvous(TunesPipeConfig config)
 			throws IOException {
 		serviceInfo = ServiceInfo
-				.create("_daap._tcp.local.", "RemotiTunes", config.localPort,
+				.create("_daap._tcp.local.", "TunesPipe", config.localPort,
 						"iTunes remote proxy service.");
 		rendezvous = JmDNS.create();
 		rendezvous.registerService(serviceInfo);
@@ -283,7 +283,7 @@ public class TunesPipeMain implements Pipe {
 		}
 	}
 
-	private class RemotiShutdownHook extends Thread {
+	private class TunesShutdownHook extends Thread {
 
 		@Override
 		public void run() {
