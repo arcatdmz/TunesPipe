@@ -1,7 +1,7 @@
-﻿RemotiTunes
+﻿TunesPipe
 Copyright (C) 2011 Jun KATO
 
-version 1.0.0
+version 1.0.1
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 RemotiTunes(以下、本ソフトウェア)は、SSHポートフォワーディング
@@ -38,5 +38,5 @@ icon PSD template」と共に改変して作成しました。ライセンス等
 https://github.com/arcatdmz/TunesPipe
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-http://rt.digitalmuseum.jp/
+http://pipes.digitalmuseum.jp/
 arc (at) digitalmuseum.jp
