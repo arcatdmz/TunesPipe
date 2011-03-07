@@ -5,12 +5,12 @@
 
 	<!-- ****Properties**** -->
 
-	<property name="app.name" value="RemotiTunes" />
+	<property name="app.name" value="TunesPipe" />
 	<property name="app.version" value="1.0.0.0" />
-	<property name="app.icon" value="resources/remotitunes.ico" />
-	<property name="app.icon.png" value="resources/remotitunes.png" />
-	<property name="app.icon.icns" value="resources/remotitunes.icns" />
-	<property name="app.main" value="jp.digitalmuseum.rt.RemotiTunesMain" />
+	<property name="app.icon" value="resources/tunespipe.ico" />
+	<property name="app.icon.png" value="resources/tunespipe.png" />
+	<property name="app.icon.icns" value="resources/tunespipe.icns" />
+	<property name="app.main" value="jp.digitalmuseum.pipes.TunesPipeMain" />
 	<property name="app.classes" value="**/*.class" />
 	<property name="app.classpath" value="lib/jmdns.jar;lib/ganymed-ssh2-build251beta1.jar" />
 	<property name="app.libraries" value="jmdns.jar ganymed-ssh2-build251beta1.jar" />
