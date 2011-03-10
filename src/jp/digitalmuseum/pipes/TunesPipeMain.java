@@ -35,7 +35,7 @@ import jp.digitalmuseum.pipes.gui.TunesDisconnectAction;
 import jp.digitalmuseum.pipes.gui.ExitAction;
 import jp.digitalmuseum.pipes.gui.TunesPipeFrame;
 
-import ch.ethz.ssh2.Connection;
+import com.trilead.ssh2.Connection;
 
 public class TunesPipeMain implements Pipe {
 	public static final String CONFIG_FILENAME = "config";
