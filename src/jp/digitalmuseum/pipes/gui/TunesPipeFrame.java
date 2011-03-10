@@ -24,6 +24,7 @@ import java.awt.Dimension;
 import java.awt.Insets;
 
 import jp.digitalmuseum.pipes.TunesPipeConfig;
+import jp.digitalmuseum.pipes.TunesPipeInfo;
 
 public class TunesPipeFrame extends JFrame {
 
@@ -71,35 +72,39 @@ public class TunesPipeFrame extends JFrame {
 	}
 
 	public void applyConfiguration(TunesPipeConfig config) {
-		getJLocalPortTextField().setText(String.valueOf(config.localPort));
-		getJHostTextField().setText(config.remoteHost);
-		getJPortTextField().setText(String.valueOf(config.remotePort));
-		getJUserNameTextField().setText(config.remoteUserName);
-		CardLayout cardLayout = (CardLayout) getJAuthenticationOptionPanel().getLayout();
-		if (config.isAuthPassword) {
-			getJAuthPassRadioButton().setSelected(true);
-			cardLayout.show(
-					getJAuthenticationOptionPanel(),
-					getJAuthPasswordPanel().getName());
-		} else {
-			getJAuthPublicKeyRadioButton().setSelected(true);
-			cardLayout.show(
-					getJAuthenticationOptionPanel(),
-					getJAuthPublicKeyPanel().getName());
+		if (config.tunesPipeInfo.size() > 0) {
+			TunesPipeInfo info = config.tunesPipeInfo.get(0);
+			getJLocalPortTextField().setText(String.valueOf(info.localPort));
+			getJHostTextField().setText(info.remoteHost);
+			getJPortTextField().setText(String.valueOf(info.remotePort));
+			getJUserNameTextField().setText(info.remoteUserName);
+			CardLayout cardLayout = (CardLayout) getJAuthenticationOptionPanel().getLayout();
+			if (info.isAuthPassword) {
+				getJAuthPassRadioButton().setSelected(true);
+				cardLayout.show(
+						getJAuthenticationOptionPanel(),
+						getJAuthPasswordPanel().getName());
+			} else {
+				getJAuthPublicKeyRadioButton().setSelected(true);
+				cardLayout.show(
+						getJAuthenticationOptionPanel(),
+						getJAuthPublicKeyPanel().getName());
+			}
+			getJAuthPasswordField().setText(info.password);
+			getJAuthPublicKeyTextField().setText(info.privateKeyFileName);
+			getJAuthPublicKeyPasswordField().setText(info.privateKeyPassword);
 		}
-		getJAuthPasswordField().setText(config.password);
-		getJAuthPublicKeyTextField().setText(config.privateKeyFileName);
-		getJAuthPublicKeyPasswordField().setText(config.privateKeyPassword);
 		setLocation(config.frameX, config.frameY);
 	}
 
 	public TunesPipeConfig getCurrentConfiguration(boolean showMessage) {
 		TunesPipeConfig config = new TunesPipeConfig();
+		TunesPipeInfo info = new TunesPipeInfo();
 		JComponent focusComponent = null;
 
 		// Check local port.
 		try {
-			config.localPort = Integer.valueOf(
+			info.localPort = Integer.valueOf(
 					getJLocalPortTextField().getText());
 		} catch (NumberFormatException nfe) {
 			if (showMessage) {
@@ -111,7 +116,7 @@ public class TunesPipeFrame extends JFrame {
 
 		// Check remote port.
 		try {
-			config.remotePort = Integer.valueOf(
+			info.remotePort = Integer.valueOf(
 					getJPortTextField().getText());
 		} catch (NumberFormatException nfe) {
 			if (showMessage) {
@@ -121,17 +126,18 @@ public class TunesPipeFrame extends JFrame {
 			}
 		}
 
-		config.remoteHost = getJHostTextField().getText();
-		config.remoteUserName = getJUserNameTextField().getText();
-		config.isAuthPassword = getJAuthPassRadioButton().isSelected();
-		config.password = String.valueOf(getJAuthPasswordField().getPassword());
-		config.privateKeyFileName = getJAuthPublicKeyTextField().getText();
-		config.privateKeyPassword = String.valueOf(getJAuthPublicKeyPasswordField().getPassword());
+		info.remoteHost = getJHostTextField().getText();
+		info.remoteUserName = getJUserNameTextField().getText();
+		info.isAuthPassword = getJAuthPassRadioButton().isSelected();
+		info.password = String.valueOf(getJAuthPasswordField().getPassword());
+		info.privateKeyFileName = getJAuthPublicKeyTextField().getText();
+		info.privateKeyPassword = String.valueOf(getJAuthPublicKeyPasswordField().getPassword());
 
 		// Request focus if needed.
 		if (focusComponent != null) {
 			focusComponent.requestFocusInWindow();
 		}
+		config.tunesPipeInfo.add(info);
 		return config;
 	}
 

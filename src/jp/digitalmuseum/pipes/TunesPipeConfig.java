@@ -1,18 +1,13 @@
 package jp.digitalmuseum.pipes;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TunesPipeConfig implements Serializable {
-	private static final long serialVersionUID = -7054905792327981060L;
+	private static final long serialVersionUID = -4212746209477763957L;
 
-	public int localPort = 13689;
-	public String remoteHost;
-	public int remotePort = 22;
-	public String remoteUserName;
-	public boolean isAuthPassword = true;
-	public String password;
-	public String privateKeyFileName;
-	public String privateKeyPassword;
+	public List<TunesPipeInfo> tunesPipeInfo = new ArrayList<TunesPipeInfo>();
 	public int frameX;
 	public int frameY;
 }

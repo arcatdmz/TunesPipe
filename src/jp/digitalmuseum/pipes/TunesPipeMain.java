@@ -95,6 +95,7 @@ public class TunesPipeMain implements Pipe {
 		}
 		if (config == null) {
 			config = new TunesPipeConfig();
+			config.tunesPipeInfo.add(new TunesPipeInfo());
 			Rectangle rect = GraphicsEnvironment.getLocalGraphicsEnvironment()
 					.getMaximumWindowBounds();
 			config.frameX = (int) (rect.getWidth() - frame.getWidth())/2;
@@ -122,11 +123,12 @@ public class TunesPipeMain implements Pipe {
 						rendezvous == null) {
 					frame.setEnabled(false);
 					TunesPipeConfig config = frame.getCurrentConfiguration(true);
+					TunesPipeInfo info = config.tunesPipeInfo.get(0);
 					try {
 						frame.setStatusText("リモートサーバに接続しています...");
-						setupSSH(config);
+						setupSSH(info);
 						frame.setStatusText("iTunesサービスを公開しています...");
-						setupRendezvous(config);
+						setupRendezvous(info);
 						frame.setStatusText("接続が確立されました.");
 						updateGUI(true);
 					} catch (Exception e) {
@@ -165,7 +167,7 @@ public class TunesPipeMain implements Pipe {
 		});
 	}
 
-	private void setupSSH(TunesPipeConfig config) throws Exception {
+	private void setupSSH(TunesPipeInfo config) throws Exception {
 		connection = new Connection(config.remoteHost, config.remotePort);
 		try {
 			connection.connect();
@@ -192,7 +194,7 @@ public class TunesPipeMain implements Pipe {
 		}
 	}
 
-	private void setupRendezvous(TunesPipeConfig config)
+	private void setupRendezvous(TunesPipeInfo config)
 			throws IOException {
 		serviceInfo = ServiceInfo
 				.create("_daap._tcp.local.", "TunesPipe", config.localPort,
