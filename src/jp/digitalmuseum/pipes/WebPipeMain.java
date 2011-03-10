@@ -21,8 +21,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.imageio.ImageIO;
-import javax.jmdns.JmDNS;
-import javax.jmdns.ServiceInfo;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -30,24 +28,24 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import jp.digitalmuseum.pipes.gui.TunesConnectAction;
-import jp.digitalmuseum.pipes.gui.TunesDisconnectAction;
+import jp.digitalmuseum.pipes.gui.WebConnectAction;
+import jp.digitalmuseum.pipes.gui.WebDisconnectAction;
 import jp.digitalmuseum.pipes.gui.ExitAction;
-import jp.digitalmuseum.pipes.gui.TunesPipeFrame;
+import jp.digitalmuseum.pipes.gui.WebPipeFrame;
+import jp.digitalmuseum.pipes.socks.ProxyServer;
 
 import com.trilead.ssh2.Connection;
 
-public class TunesPipeMain implements Pipe {
+public class WebPipeMain implements Pipe {
 	public static final String CONFIG_FILENAME = "config";
 	public static final String ICON_FILENAME = "resources/tunespipe.png";
-	private static TunesPipeMain instance;
+	private static WebPipeMain instance;
 	private ExecutorService executor;
 
-	private JmDNS rendezvous;
 	private Connection connection;
-	private ServiceInfo serviceInfo;
+	private ProxyServer server;
 
-	private TunesPipeFrame frame;
+	private WebPipeFrame frame;
 	private boolean isOSX;
 
 	private JPopupMenu menu;
@@ -57,17 +55,17 @@ public class TunesPipeMain implements Pipe {
 	private boolean isFirstConnection = true;
 
 	public static void main(String[] args) {
-		TunesPipeMain.getInstance();
+		WebPipeMain.getInstance();
 	}
 
-	public static TunesPipeMain getInstance() {
+	public static WebPipeMain getInstance() {
 		if (instance == null) {
-			instance = new TunesPipeMain();
+			instance = new WebPipeMain();
 		}
 		return instance;
 	}
 
-	private TunesPipeMain() {
+	private WebPipeMain() {
 		Runtime.getRuntime().addShutdownHook(new TunesShutdownHook());
 		executor = Executors.newSingleThreadExecutor();
 		isOSX = System.getProperty("os.name").toLowerCase().indexOf("mac") >= 0;
@@ -82,20 +80,20 @@ public class TunesPipeMain implements Pipe {
 	}
 
 	private void loadConfiguration() {
-		TunesPipeConfig config = null;
+		WebPipeConfig config = null;
 		File configFile = new File(CONFIG_FILENAME);
 		if (configFile.exists() && configFile.isFile()) {
 			try {
 				ObjectInputStream ois = new ObjectInputStream(
 						new FileInputStream(configFile));
-				config = (TunesPipeConfig) ois.readObject();
+				config = (WebPipeConfig) ois.readObject();
 			} catch (Exception e) {
 				// Do nothing.
 			}
 		}
 		if (config == null) {
-			config = new TunesPipeConfig();
-			config.tunesPipeInfo.add(new TunesPipeInfo());
+			config = new WebPipeConfig();
+			config.webPipeInfo.add(new WebPipeInfo());
 			Rectangle rect = GraphicsEnvironment.getLocalGraphicsEnvironment()
 					.getMaximumWindowBounds();
 			config.frameX = (int) (rect.getWidth() - frame.getWidth())/2;
@@ -104,7 +102,7 @@ public class TunesPipeMain implements Pipe {
 		frame.applyConfiguration(config);
 	}
 
-	private void saveConfiguration(TunesPipeConfig configuration) {
+	private void saveConfiguration(WebPipeConfig configuration) {
 		File configFile = new File(CONFIG_FILENAME);
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(
@@ -119,16 +117,13 @@ public class TunesPipeMain implements Pipe {
 		executor.execute(new Runnable() {
 
 			public void run() {
-				if (connection == null &&
-						rendezvous == null) {
+				if (connection == null) {
 					frame.setEnabled(false);
-					TunesPipeConfig config = frame.getCurrentConfiguration(true);
-					TunesPipeInfo info = config.tunesPipeInfo.get(0);
+					WebPipeConfig config = frame.getCurrentConfiguration(true);
+					WebPipeInfo info = config.webPipeInfo.get(0);
 					try {
 						frame.setStatusText("リモートサーバに接続しています...");
 						setupSSH(info);
-						frame.setStatusText("iTunesサービスを公開しています...");
-						setupRendezvous(info);
 						frame.setStatusText("接続が確立されました.");
 						updateGUI(true);
 					} catch (Exception e) {
@@ -145,20 +140,18 @@ public class TunesPipeMain implements Pipe {
 	}
 
 	public void disconnect() {
-		executor.execute(new Runnable() {
+		executor.submit(new Runnable() {
 
 			public void run() {
-				if (connection != null ||
-						rendezvous != null) {
+				if (connection != null) {
 					frame.setEnabled(false);
 					frame.setStatusText("接続を切っています...");
+					if (server != null) {
+						server.stop();
+					}
 					if (connection != null) {
 						connection.close();
 						connection = null;
-					}
-					if (rendezvous != null) {
-						rendezvous.unregisterService(serviceInfo);
-						rendezvous = null;
 					}
 					frame.setStatusText("接続を切りました.");
 					updateGUI(false);
@@ -167,7 +160,7 @@ public class TunesPipeMain implements Pipe {
 		});
 	}
 
-	private void setupSSH(TunesPipeInfo config) throws Exception {
+	private void setupSSH(WebPipeInfo config) throws Exception {
 		connection = new Connection(config.remoteHost, config.remotePort);
 		try {
 			connection.connect();
@@ -188,19 +181,11 @@ public class TunesPipeMain implements Pipe {
 			throw new Exception("リモートサーバのユーザ認証に失敗しました.", e);
 		}
 		if (isAuthenticated) {
-			connection.createLocalPortForwarder(config.localPort, "127.0.0.1", 3689);
+			server = new ProxyServer(connection, config.localPort);
+			server.start();
 		} else {
 			throw new Exception("リモートサーバでユーザ認証が拒否されました.");
 		}
-	}
-
-	private void setupRendezvous(TunesPipeInfo config)
-			throws IOException {
-		serviceInfo = ServiceInfo
-				.create("_daap._tcp.local.", "TunesPipe", config.localPort,
-						"iTunes remote proxy service.");
-		rendezvous = JmDNS.create();
-		rendezvous.registerService(serviceInfo);
 	}
 
 	private void initGUI() {
@@ -222,7 +207,7 @@ public class TunesPipeMain implements Pipe {
 			}
 		}
 
-		frame = new TunesPipeFrame();
+		frame = new WebPipeFrame();
 		frame.setIconImage(iconImage);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -231,8 +216,8 @@ public class TunesPipeMain implements Pipe {
 		}
 
 		menu = new JPopupMenu();
-		connectMenuItem = menu.add(new TunesConnectAction("接続する"));
-		disconnectMenuItem = menu.add(new TunesDisconnectAction("切断する"));
+		connectMenuItem = menu.add(new WebConnectAction("接続する"));
+		disconnectMenuItem = menu.add(new WebDisconnectAction("切断する"));
 		menu.addSeparator();
 		menu.add(new ExitAction("終了する"));
 
@@ -289,15 +274,15 @@ public class TunesPipeMain implements Pipe {
 
 		@Override
 		public void run() {
-			TunesPipeConfig config = frame.getCurrentConfiguration(false);
+			WebPipeConfig config = frame.getCurrentConfiguration(false);
 			config.frameX = frame.getX();
 			config.frameY = frame.getY();
 			saveConfiguration(config);
+			if (server != null) {
+				server.stop();
+			}
 			if (connection != null) {
 				connection.close();
-			}
-			if (rendezvous != null) {
-				rendezvous.unregisterService(serviceInfo);
 			}
 			executor.shutdownNow();
 		}

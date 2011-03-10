@@ -23,10 +23,10 @@ import javax.swing.JButton;
 import java.awt.Dimension;
 import java.awt.Insets;
 
-import jp.digitalmuseum.pipes.TunesPipeConfig;
-import jp.digitalmuseum.pipes.TunesPipeInfo;
+import jp.digitalmuseum.pipes.WebPipeConfig;
+import jp.digitalmuseum.pipes.WebPipeInfo;
 
-public class TunesPipeFrame extends JFrame {
+public class WebPipeFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel jContentPane = null;
@@ -66,14 +66,14 @@ public class TunesPipeFrame extends JFrame {
 	/**
 	 * This is the default constructor
 	 */
-	public TunesPipeFrame() {
+	public WebPipeFrame() {
 		super();
 		initialize();
 	}
 
-	public void applyConfiguration(TunesPipeConfig config) {
-		if (config.tunesPipeInfo.size() > 0) {
-			TunesPipeInfo info = config.tunesPipeInfo.get(0);
+	public void applyConfiguration(WebPipeConfig config) {
+		if (config.webPipeInfo.size() > 0) {
+			WebPipeInfo info = config.webPipeInfo.get(0);
 			getJLocalPortTextField().setText(String.valueOf(info.localPort));
 			getJHostTextField().setText(info.remoteHost);
 			getJPortTextField().setText(String.valueOf(info.remotePort));
@@ -97,9 +97,9 @@ public class TunesPipeFrame extends JFrame {
 		setLocation(config.frameX, config.frameY);
 	}
 
-	public TunesPipeConfig getCurrentConfiguration(boolean showMessage) {
-		TunesPipeConfig config = new TunesPipeConfig();
-		TunesPipeInfo info = new TunesPipeInfo();
+	public WebPipeConfig getCurrentConfiguration(boolean showMessage) {
+		WebPipeConfig config = new WebPipeConfig();
+		WebPipeInfo info = new WebPipeInfo();
 		JComponent focusComponent = null;
 
 		// Check local port.
@@ -137,7 +137,7 @@ public class TunesPipeFrame extends JFrame {
 		if (focusComponent != null) {
 			focusComponent.requestFocusInWindow();
 		}
-		config.tunesPipeInfo.add(info);
+		config.webPipeInfo.add(info);
 		return config;
 	}
 
@@ -176,7 +176,7 @@ public class TunesPipeFrame extends JFrame {
 		this.setSize(560, 380);
 		this.setMinimumSize(new Dimension(560, 380));
 		this.setContentPane(getJContentPane());
-		this.setTitle("TunesPipe");
+		this.setTitle("WebPipe");
 		ButtonGroup group = new ButtonGroup();
 		group.add(getJAuthPassRadioButton());
 		group.add(getJAuthPublicKeyRadioButton());
@@ -225,7 +225,7 @@ public class TunesPipeFrame extends JFrame {
 			jLocalPortLabel.setPreferredSize(new Dimension(100, 13));
 			jLocalSettingPanel = new JPanel();
 			jLocalSettingPanel.setLayout(new GridBagLayout());
-			jLocalSettingPanel.setBorder(BorderFactory.createTitledBorder(null, "ローカルホストの設定 (DAAP)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("MS UI Gothic", Font.PLAIN, 12), Color.black));
+			jLocalSettingPanel.setBorder(BorderFactory.createTitledBorder(null, "ローカルホストの設定 (SOCKS)", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("MS UI Gothic", Font.PLAIN, 12), Color.black));
 			jLocalSettingPanel.add(jLocalPortLabel, gridBagConstraints1);
 			jLocalSettingPanel.add(getJLocalPortTextField(), gridBagConstraints);
 		}
@@ -508,7 +508,7 @@ public class TunesPipeFrame extends JFrame {
 	private JButton getJConnectButton() {
 		if (jConnectButton == null) {
 			jConnectButton = new JButton();
-			jConnectButton.setAction(new TunesConnectAction());
+			jConnectButton.setAction(new WebConnectAction());
 			jConnectButton.setText("接続");
 		}
 		return jConnectButton;
@@ -522,7 +522,7 @@ public class TunesPipeFrame extends JFrame {
 	private JButton getJDisconnectButton() {
 		if (jDisconnectButton == null) {
 			jDisconnectButton = new JButton();
-			jDisconnectButton.setAction(new TunesDisconnectAction());
+			jDisconnectButton.setAction(new WebDisconnectAction());
 			jDisconnectButton.setText("切断");
 		}
 		return jDisconnectButton;
