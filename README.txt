@@ -38,5 +38,5 @@ icon PSD template」と共に改変して作成しました。ライセンス等
 https://github.com/arcatdmz/TunesPipe
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-http://pipes.digitalmuseum.jp/
+http://digitalmuseum.jp/software/rtunes/
 arc (at) digitalmuseum.jp
